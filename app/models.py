@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, field_validator
+from typing import Optional, List, Any
 
 
 class SubjectScore(BaseModel):
@@ -24,6 +24,15 @@ class RawExtraction(BaseModel):
     grade_scale: Optional[str] = None
     result: Optional[str] = None
     cgpa_formula_on_cert: Optional[str] = None
+
+    @field_validator("year_of_passing", "institution", "student_name", "degree",
+                     "specialization", "grade", "grade_scale", "result",
+                     "cgpa_formula_on_cert", mode="before")
+    @classmethod
+    def coerce_to_str(cls, v: Any) -> Any:
+        if v is not None and not isinstance(v, str):
+            return str(v)
+        return v
 
 
 class NormalizedResult(BaseModel):
