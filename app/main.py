@@ -18,31 +18,58 @@ app = FastAPI(
     description="""
 ## Indian Academic Certificate Scanner
 
-Extracts and normalizes academic scores from Indian degree certificates, marksheets, and provisional certificates using AI vision.
+Extracts and normalizes academic scores from Indian degree certificates, marksheets, and provisional certificates using AI vision (Gemini via OpenRouter).
+
+---
 
 ### Supported Documents
-- **Marksheets** — extracts grand total marks, computes percentage
-- **Provisional Certificates** — extracts result class, shows approximate range
-- **Degree Certificates** — extracts result class and CGPA if present
-- **Transcripts** — semester-wise academic records
-
-### Possible Outcomes
-
-| Field | Description |
+| Type | What is extracted |
 |---|---|
-| `percentage` | Exact if found on cert, or computed from marks/CGPA |
-| `percentage_range` | e.g. `"60–74%"` — shown when only result class is available |
-| `is_provisional` | `true` when values are approximate (provisional/degree cert) |
-| `classification` | First Class with Distinction / First Class / Second Class / Pass |
-| `on_10_scale` | Percentage converted to 10-point scale |
-| `on_4_scale` | Percentage converted to 4-point GPA scale |
-| `method` | How the percentage was derived |
-| `confidence` | `high` / `medium` / `low` — university match quality |
+| **Marksheet** | Grand total marks, percentage, CGPA, grade |
+| **Degree Certificate** | Result class, CGPA if present |
+| **Provisional Certificate** | Result class, CGPA if present |
+| **Transcript** | Semester marks, CGPA |
 
-### Quality Indicators
-- **Green** — exact data extracted from document
-- **Orange** — approximate values derived from result class only
-- **Red** — extraction failed, manual verification needed
+---
+
+### How Percentage is Computed (priority order)
+1. **Direct** — percentage explicitly printed on the document
+2. **Marks** — `(marks_scored / total_marks) × 100`
+3. **CGPA** — using formula printed on cert, or university-specific formula, or `CGPA × 10` (UGC standard fallback)
+4. **Grade letter** — midpoint of grade range for that university
+
+If none of the above are available (result class only, or poor scan), `percentage` will be `null`.
+
+---
+
+### Response Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `raw` | object | Exactly what the AI extracted from the document |
+| `llm_json` | object | Raw JSON returned by the vision model |
+| `percentage` | float \\| null | Normalized percentage — null if could not be determined |
+| `classification` | string \\| null | First Class with Distinction / First Class / Second Class / Pass |
+| `on_10_scale` | float \\| null | Equivalent on 10-point scale |
+| `on_4_scale` | float \\| null | Equivalent on 4-point GPA scale |
+| `method` | string | How percentage was derived e.g. `"marks 850/1200"` |
+| `university_matched` | string | Matched university rule key or `fallback_ugc` |
+| `confidence` | string | `high` / `medium` / `low` — how well university was identified |
+
+---
+
+### Quality Check (frontend)
+- **Green** — `percentage`, `marks`, or `cgpa` successfully extracted
+- **Red** — none of the above found; manual verification needed
+
+---
+
+### Error Codes
+| Code | Meaning |
+|---|---|
+| 400 | Bad file type, file too large, or invalid URL |
+| 422 | Image could not be decoded/read |
+| 502 | AI model call failed (check `OPENROUTER_API_KEY`) |
 """,
     version="1.0.0",
 )
