@@ -6,35 +6,37 @@ from openai import OpenAI
 from models import RawExtraction
 
 PROMPT = """
-You are analyzing an Indian academic certificate, marksheet, or degree document.
+You are analyzing an Indian academic marksheet, degree certificate, or transcript.
 
-Extract ONLY what is explicitly visible. Do not guess or infer values not shown.
+Extract ONLY what is explicitly visible. Do not guess or compute values yourself.
+
+IMPORTANT — Indian marksheets always have a GRAND TOTAL / SUMMARY row at the bottom of the marks table showing total marks obtained vs maximum marks (e.g. "Total: 850 / 1200" or "Grand Total: 720 out of 900"). Find this row and use it for marks_scored and total_marks. Also look for a printed percentage, CGPA, or GPA near that summary row.
 
 Return a single valid JSON object — no markdown, no explanation, no code fences:
 {
-  "institution": "full institution name as printed",
-  "student_name": "student name",
-  "degree": "degree name e.g. B.E., B.Tech, B.Sc, M.Tech",
+  "institution": "full university/board name as printed",
+  "student_name": "student full name",
+  "degree": "degree name e.g. B.E., B.Tech, B.Sc, M.Tech, MBA",
   "specialization": "branch/specialization e.g. Computer Science",
-  "year_of_passing": "year",
-  "marks_scored": <number or null>,
-  "total_marks": <number or null>,
-  "percentage": <number or null>,
-  "grade": "letter grade if shown e.g. O, A+, A, B+",
-  "gpa": <number or null>,
-  "cgpa": <number or null>,
-  "grade_scale": "scale shown on cert e.g. 10, 7, 4.0",
-  "result": "result class if shown e.g. FIRST CLASS WITH DISTINCTION",
-  "cgpa_formula_on_cert": "if a conversion formula is printed on the certificate, copy it exactly, else null",
+  "year_of_passing": "year of passing or exam year",
+  "marks_scored": <grand total marks obtained — number or null>,
+  "total_marks": <grand total maximum marks — number or null>,
+  "percentage": <percentage if explicitly printed on document — number or null>,
+  "grade": "overall letter grade if shown e.g. O, A+, A, B+",
+  "gpa": <GPA value if shown — number or null>,
+  "cgpa": <CGPA value if shown — number or null>,
+  "grade_scale": "scale e.g. 10, 7, 4.0 — null if not shown",
+  "result": "result class exactly as printed e.g. FIRST CLASS WITH DISTINCTION, FIRST CLASS, PASS",
+  "cgpa_formula_on_cert": "if a CGPA-to-percentage conversion formula is printed anywhere on the document copy it exactly, else null",
   "subject_wise": [
-    { "subject": "name", "marks": <number>, "total": <number>, "grade": "letter or null" }
+    { "subject": "subject name", "marks": <marks obtained>, "total": <max marks>, "grade": "letter grade or null" }
   ]
 }
 
 Rules:
-- percentage: use value directly if shown; do NOT compute it yourself
-- cgpa/gpa: include the scale if visible (look for /10 or /4 notation)
-- subject_wise: include all rows from the marks table; omit if no table visible
+- marks_scored / total_marks: use the GRAND TOTAL row, not individual subject rows
+- percentage: only if explicitly printed — do NOT compute it
+- subject_wise: all individual subject rows from the marks table (exclude the total/grand total row)
 - Return null for any field not found
 """
 
