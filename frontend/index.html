@@ -72,8 +72,9 @@
   .score-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
   .score-card.highlight .value { color: #1d4ed8; }
 
-  .quality-ok  { display:flex; align-items:center; gap:.5rem; background:#dcfce7; color:#166534; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
-  .quality-warn{ display:flex; align-items:center; gap:.5rem; background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
+  .quality-ok     { display:flex; align-items:center; gap:.5rem; background:#dcfce7; color:#166534; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
+  .quality-approx { display:flex; align-items:center; gap:.5rem; background:#fef9c3; color:#854d0e; border:1px solid #fde68a; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
+  .quality-warn   { display:flex; align-items:center; gap:.5rem; background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
 
   .meta-row { display: flex; flex-wrap: wrap; gap: .5rem 2rem; font-size: .85rem; margin-bottom: 1.2rem; }
   .meta-row span { color: #475569; }
@@ -187,12 +188,14 @@ function val(v, suffix='') { return v != null ? v + suffix : '—'; }
 function renderResult(d) {
   const r = d.raw;
 
-  // Quality check — red warning if no score data extracted at all
-  const hasScore = d.percentage != null || r.cgpa != null || r.gpa != null
-                   || r.marks_scored != null;
-  const qualityBadge = hasScore
+  const hasExact   = r.marks_scored != null || r.cgpa != null || r.gpa != null
+                     || (d.percentage != null && !d.is_provisional);
+  const hasApprox  = d.is_provisional && d.percentage != null;
+  const qualityBadge = hasExact
     ? `<div class="quality-ok">&#10003; Data extracted successfully</div>`
-    : `<div class="quality-warn">&#9888; Could not extract scores — poor scan quality or unsupported format. Please verify manually.</div>`;
+    : hasApprox
+      ? `<div class="quality-approx">&#9432; Approximate values — based on result class only (provisional/degree cert)</div>`
+      : `<div class="quality-warn">&#9888; Could not extract scores — poor scan quality or unsupported format. Please verify manually.</div>`;
 
   resultDiv.innerHTML = `
     <div class="meta-row">
@@ -206,8 +209,8 @@ function renderResult(d) {
 
     <div class="score-grid">
       <div class="score-card highlight">
-        <div class="label">Percentage</div>
-        <div class="value">${d.percentage != null ? d.percentage.toFixed(1) + '%' : '—'}</div>
+        <div class="label">Percentage${d.is_provisional ? ' (approx)' : ''}</div>
+        <div class="value">${d.percentage_range ? d.percentage_range : (d.percentage != null ? d.percentage.toFixed(1) + '%' : '—')}</div>
         <div class="sub">${d.classification || ''}</div>
       </div>
       <div class="score-card">

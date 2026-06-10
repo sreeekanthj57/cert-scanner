@@ -6,14 +6,23 @@ from openai import OpenAI
 from models import RawExtraction
 
 PROMPT = """
-You are analyzing an Indian academic marksheet, degree certificate, or transcript.
+You are analyzing an Indian academic document — this could be a marksheet, degree certificate, provisional certificate, or transcript.
 
 Extract ONLY what is explicitly visible. Do not guess or compute values yourself.
 
-IMPORTANT — Indian marksheets always have a GRAND TOTAL / SUMMARY row at the bottom of the marks table showing total marks obtained vs maximum marks (e.g. "Total: 850 / 1200" or "Grand Total: 720 out of 900"). Find this row and use it for marks_scored and total_marks. Also look for a printed percentage, CGPA, or GPA near that summary row.
+STEP 1 — Identify document type:
+- "marksheet": shows subject-wise marks and a grand total row
+- "provisional": issued temporarily after results; usually shows result class and sometimes CGPA, rarely marks
+- "degree": final degree certificate; usually shows result class only
+- "transcript": detailed academic record with semester-wise breakdown
+
+STEP 2 — For marksheets: look for the GRAND TOTAL / SUMMARY row at the bottom (e.g. "Total: 850 / 1200", "Grand Total: 720 out of 900"). Use that row for marks_scored and total_marks.
+
+STEP 3 — For provisional/degree certificates: the result class (e.g. "FIRST CLASS WITH DISTINCTION") is the key data point. Also extract CGPA/GPA if shown.
 
 Return a single valid JSON object — no markdown, no explanation, no code fences:
 {
+  "document_type": "marksheet | provisional | degree | transcript",
   "institution": "full university/board name as printed",
   "student_name": "student full name",
   "degree": "degree name e.g. B.E., B.Tech, B.Sc, M.Tech, MBA",
@@ -21,18 +30,19 @@ Return a single valid JSON object — no markdown, no explanation, no code fence
   "year_of_passing": "year of passing or exam year",
   "marks_scored": <grand total marks obtained — number or null>,
   "total_marks": <grand total maximum marks — number or null>,
-  "percentage": <percentage if explicitly printed on document — number or null>,
+  "percentage": <percentage if explicitly printed — number or null>,
   "grade": "overall letter grade if shown e.g. O, A+, A, B+",
   "gpa": <GPA value if shown — number or null>,
   "cgpa": <CGPA value if shown — number or null>,
   "grade_scale": "scale e.g. 10, 7, 4.0 — null if not shown",
-  "result": "result class exactly as printed e.g. FIRST CLASS WITH DISTINCTION, FIRST CLASS, PASS",
-  "cgpa_formula_on_cert": "if a CGPA-to-percentage conversion formula is printed anywhere on the document copy it exactly, else null",
+  "result": "result class exactly as printed e.g. FIRST CLASS WITH DISTINCTION, FIRST CLASS, SECOND CLASS, PASS",
+  "cgpa_formula_on_cert": "if a CGPA-to-percentage conversion formula is printed anywhere copy it exactly, else null"
 }
 
 Rules:
-- marks_scored / total_marks: use the GRAND TOTAL row only, not individual subject rows
-- percentage: only if explicitly printed — do NOT compute it
+- marks_scored / total_marks: grand total row only — never individual subjects
+- percentage: only if explicitly printed — do NOT compute
+- result: copy exactly as written on document
 - Return null for any field not found
 """
 
