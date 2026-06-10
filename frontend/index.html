@@ -15,17 +15,20 @@
   .container { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
 
   .upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     border: 2px dashed #c0c8d8;
     border-radius: 12px;
     padding: 3rem 2rem;
     text-align: center;
     background: white;
     cursor: pointer;
-    transition: border-color .2s;
+    transition: border-color .2s, background .2s;
   }
   .upload-box:hover, .upload-box.drag { border-color: #4f6ef7; background: #f0f4ff; }
-  .upload-box input[type=file] { display: none; }
-  .upload-box .icon { font-size: 3rem; }
+  .upload-box .icon { font-size: 3rem; line-height: 1; }
   .upload-box h2 { margin: .75rem 0 .4rem; font-size: 1.1rem; }
   .upload-box p  { font-size: .85rem; color: #666; }
   .upload-box button {
@@ -101,13 +104,13 @@
 
 <div class="container">
 
-  <label class="upload-box" id="drop-zone">
-    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/tiff" />
+  <div class="upload-box" id="drop-zone">
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/tiff" style="display:none" />
     <div class="icon">📄</div>
     <h2>Drop certificate image here</h2>
     <p>JPEG, PNG, WEBP, TIFF — max 10 MB</p>
-    <button onclick="event.preventDefault(); document.getElementById('file-input').click()">Choose File</button>
-  </label>
+    <button onclick="document.getElementById('file-input').click()">Choose File</button>
+  </div>
 
   <div id="preview-wrap"><img id="preview" src="" alt="preview" /></div>
   <button id="scan-btn">Scan Certificate</button>
