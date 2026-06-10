@@ -87,10 +87,6 @@
 
   .method-note { font-size: .78rem; color: #94a3b8; margin-bottom: 1.5rem; }
 
-  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-  th { text-align: left; padding: .5rem .75rem; background: #f1f5f9; color: #475569; font-weight: 600; }
-  td { padding: .45rem .75rem; border-bottom: 1px solid #f1f5f9; }
-  tr:last-child td { border-bottom: none; }
 
   #error { display:none; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:1rem; margin-top:1rem; color:#991b1b; font-size:.9rem; }
 </style>
@@ -181,24 +177,6 @@ function renderResult(d) {
 
   const confLabel = { high: 'High confidence match', medium: 'Approximate match', low: 'Fallback — verify manually' };
 
-  let subjectTable = '';
-  if (r.subject_wise && r.subject_wise.length) {
-    const rows = r.subject_wise.map(s =>
-      `<tr>
-        <td>${s.subject || '—'}</td>
-        <td>${s.marks != null ? s.marks : '—'}</td>
-        <td>${s.total != null ? s.total : '—'}</td>
-        <td>${s.marks != null && s.total ? ((s.marks/s.total)*100).toFixed(1)+'%' : '—'}</td>
-        <td>${s.grade || '—'}</td>
-      </tr>`
-    ).join('');
-    subjectTable = `
-      <h3 style="font-size:.9rem;margin-bottom:.75rem;color:#475569">Subject-wise Scores</h3>
-      <table>
-        <thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>%</th><th>Grade</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-  }
 
   resultDiv.innerHTML = `
     <div class="meta-row">
@@ -243,7 +221,6 @@ function renderResult(d) {
 
     <div class="method-note">Normalization: ${d.method || '—'}</div>
 
-    ${subjectTable}
   `;
   resultDiv.style.display = 'block';
 }

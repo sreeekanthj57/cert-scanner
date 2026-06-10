@@ -24,7 +24,6 @@ class RawExtraction(BaseModel):
     grade_scale: Optional[str] = None
     result: Optional[str] = None
     cgpa_formula_on_cert: Optional[str] = None
-    subject_wise: Optional[List[SubjectScore]] = []
 
 
 class NormalizedResult(BaseModel):

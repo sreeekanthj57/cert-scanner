@@ -97,20 +97,6 @@ def normalize(raw: RawExtraction) -> NormalizedResult:
             pct = (r[0] + r[1]) / 2
             method = f"grade {raw.grade} → midpoint {pct:.1f}% (approx)"
 
-    # 5. Aggregate from subject-wise when nothing else is available
-    if pct is None and raw.subject_wise:
-        valid = [
-            (s.marks, s.total) for s in raw.subject_wise
-            if s.marks is not None and s.total is not None and s.total > 0
-        ]
-        if valid:
-            total_scored = sum(m for m, t in valid)
-            total_max = sum(t for m, t in valid)
-            pct = (total_scored / total_max) * 100
-            raw.marks_scored = total_scored
-            raw.total_marks = total_max
-            method = f"aggregated from {len(valid)} subjects ({int(total_scored)}/{int(total_max)})"
-
     classification = _classify(pct, rule) if pct is not None else None
 
     return NormalizedResult(

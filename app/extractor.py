@@ -28,15 +28,11 @@ Return a single valid JSON object — no markdown, no explanation, no code fence
   "grade_scale": "scale e.g. 10, 7, 4.0 — null if not shown",
   "result": "result class exactly as printed e.g. FIRST CLASS WITH DISTINCTION, FIRST CLASS, PASS",
   "cgpa_formula_on_cert": "if a CGPA-to-percentage conversion formula is printed anywhere on the document copy it exactly, else null",
-  "subject_wise": [
-    { "subject": "subject name", "marks": <marks obtained>, "total": <max marks>, "grade": "letter grade or null" }
-  ]
 }
 
 Rules:
-- marks_scored / total_marks: use the GRAND TOTAL row, not individual subject rows
+- marks_scored / total_marks: use the GRAND TOTAL row only, not individual subject rows
 - percentage: only if explicitly printed — do NOT compute it
-- subject_wise: all individual subject rows from the marks table (exclude the total/grand total row)
 - Return null for any field not found
 """
 
