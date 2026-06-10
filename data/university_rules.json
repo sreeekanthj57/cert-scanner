@@ -1,0 +1,176 @@
+{
+  "anna_university": {
+    "aliases": ["anna university", "au chennai", "affiliated to anna university", "college of engineering anna"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "O":  { "range": [91, 100], "points": 10 },
+      "A+": { "range": [81, 90],  "points": 9 },
+      "A":  { "range": [71, 80],  "points": 8 },
+      "B+": { "range": [61, 70],  "points": 7 },
+      "B":  { "range": [50, 60],  "points": 6 },
+      "RA": { "range": [0, 49],   "points": 0 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "delhi_university": {
+    "aliases": ["university of delhi", "delhi university", "du delhi"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 9.5",
+    "grades": {
+      "O":  { "range": [95, 100], "points": 10 },
+      "A+": { "range": [85, 94],  "points": 9 },
+      "A":  { "range": [75, 84],  "points": 8 },
+      "B+": { "range": [65, 74],  "points": 7 },
+      "B":  { "range": [55, 64],  "points": 6 },
+      "C":  { "range": [45, 54],  "points": 5 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "vtu": {
+    "aliases": ["visvesvaraya technological university", "vtu", "vtu belgaum", "vtu belagavi"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "(cgpa - 0.75) * 10",
+    "grades": {
+      "O":  { "range": [90, 100], "points": 10 },
+      "A+": { "range": [80, 89],  "points": 9 },
+      "A":  { "range": [70, 79],  "points": 8 },
+      "B+": { "range": [60, 69],  "points": 7 },
+      "B":  { "range": [55, 59],  "points": 6 },
+      "C":  { "range": [50, 54],  "points": 5 }
+    },
+    "classification": { "distinction": 70, "first": 60, "second": 50 }
+  },
+
+  "mumbai_university": {
+    "aliases": ["university of mumbai", "mumbai university", "fort mumbai"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "O":  { "range": [80, 100], "points": 10 },
+      "A":  { "range": [70, 79],  "points": 9 },
+      "B":  { "range": [60, 69],  "points": 8 },
+      "C":  { "range": [55, 59],  "points": 7 },
+      "D":  { "range": [50, 54],  "points": 6 },
+      "E":  { "range": [45, 49],  "points": 5 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 45 }
+  },
+
+  "pune_university": {
+    "aliases": ["savitribai phule pune university", "pune university", "sppu"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "O":  { "range": [80, 100], "points": 10 },
+      "A+": { "range": [70, 79],  "points": 9 },
+      "A":  { "range": [60, 69],  "points": 8 },
+      "B+": { "range": [55, 59],  "points": 7 },
+      "B":  { "range": [50, 54],  "points": 6 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "osmania_university": {
+    "aliases": ["osmania university", "ou hyderabad"],
+    "scale": "percentage",
+    "cgpa_to_pct": "cgpa * 10",
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "jntu": {
+    "aliases": ["jawaharlal nehru technological university", "jntu", "jntuh", "jntuk", "jntua"],
+    "scale": "percentage",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "O":  { "range": [90, 100], "points": 10 },
+      "A+": { "range": [80, 89],  "points": 9 },
+      "A":  { "range": [70, 79],  "points": 8 },
+      "B":  { "range": [60, 69],  "points": 7 },
+      "C":  { "range": [50, 59],  "points": 6 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "kerala_university": {
+    "aliases": ["university of kerala", "kerala university", "thiruvananthapuram university"],
+    "scale": "cgpa_7",
+    "cgpa_to_pct": "cgpa * (100/7)",
+    "grades": {
+      "S":  { "range": [90, 100], "points": 7 },
+      "A+": { "range": [80, 89],  "points": 6 },
+      "A":  { "range": [70, 79],  "points": 5 },
+      "B+": { "range": [60, 69],  "points": 4 },
+      "B":  { "range": [50, 59],  "points": 3 },
+      "C":  { "range": [40, 49],  "points": 2 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "calicut_university": {
+    "aliases": ["university of calicut", "calicut university", "malappuram"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "bangalore_university": {
+    "aliases": ["bangalore university", "bengaluru university", "jnanabharathi"],
+    "scale": "percentage",
+    "cgpa_to_pct": "cgpa * 10",
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "madras_university": {
+    "aliases": ["university of madras", "madras university", "chepauk"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "O":  { "range": [91, 100], "points": 10 },
+      "A+": { "range": [81, 90],  "points": 9 },
+      "A":  { "range": [71, 80],  "points": 8 },
+      "B+": { "range": [61, 70],  "points": 7 },
+      "B":  { "range": [50, 60],  "points": 6 }
+    },
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  },
+
+  "calcutta_university": {
+    "aliases": ["university of calcutta", "calcutta university", "cu kolkata"],
+    "scale": "percentage",
+    "cgpa_to_pct": "cgpa * 10",
+    "classification": { "distinction": 75, "first": 60, "second": 45 }
+  },
+
+  "rajasthan_university": {
+    "aliases": ["university of rajasthan", "rajasthan university", "jaipur university"],
+    "scale": "percentage",
+    "cgpa_to_pct": "cgpa * 10",
+    "classification": { "distinction": 75, "first": 60, "second": 48 }
+  },
+
+  "iit": {
+    "aliases": ["indian institute of technology", "iit bombay", "iit delhi", "iit madras", "iit kanpur", "iit kharagpur", "iit roorkee", "iit guwahati"],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "grades": {
+      "EX": { "range": [91, 100], "points": 10 },
+      "AA": { "range": [80, 90],  "points": 10 },
+      "AB": { "range": [70, 79],  "points": 9 },
+      "BB": { "range": [60, 69],  "points": 8 },
+      "BC": { "range": [50, 59],  "points": 7 },
+      "CC": { "range": [40, 49],  "points": 6 }
+    },
+    "classification": { "distinction": 8, "first": 6, "second": 5 }
+  },
+
+  "fallback_ugc": {
+    "aliases": [],
+    "scale": "cgpa_10",
+    "cgpa_to_pct": "cgpa * 10",
+    "notes": "UGC standard — used when university not matched",
+    "classification": { "distinction": 75, "first": 60, "second": 50 }
+  }
+}

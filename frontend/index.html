@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Certificate Scanner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f7fa; color: #1a1a2e; min-height: 100vh; }
+
+  header { background: #1a1a2e; color: white; padding: 1rem 2rem; }
+  header h1 { font-size: 1.25rem; font-weight: 600; }
+  header p  { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+
+  .container { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+
+  .upload-box {
+    border: 2px dashed #c0c8d8;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: white;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .upload-box:hover, .upload-box.drag { border-color: #4f6ef7; background: #f0f4ff; }
+  .upload-box input[type=file] { display: none; }
+  .upload-box .icon { font-size: 3rem; }
+  .upload-box h2 { margin: .75rem 0 .4rem; font-size: 1.1rem; }
+  .upload-box p  { font-size: .85rem; color: #666; }
+  .upload-box button {
+    margin-top: 1.2rem;
+    background: #4f6ef7; color: white;
+    border: none; border-radius: 8px;
+    padding: .6rem 1.6rem; font-size: .9rem;
+    cursor: pointer;
+  }
+
+  #preview-wrap { display: none; text-align: center; margin-top: 1rem; }
+  #preview-wrap img { max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px #0002; }
+
+  #scan-btn {
+    display: none; width: 100%; margin-top: 1rem;
+    background: #22c55e; color: white;
+    border: none; border-radius: 8px;
+    padding: .75rem; font-size: 1rem; font-weight: 600;
+    cursor: pointer;
+  }
+  #scan-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+  #loading { display: none; text-align: center; margin: 2rem 0; }
+  .spinner {
+    width: 40px; height: 40px; border: 4px solid #e5e7eb;
+    border-top-color: #4f6ef7; border-radius: 50%;
+    animation: spin .8s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #result { display: none; background: white; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .score-card {
+    border-radius: 10px; padding: 1rem 1.2rem;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+  }
+  .score-card .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; }
+  .score-card .value { font-size: 1.6rem; font-weight: 700; margin: .2rem 0; }
+  .score-card .sub   { font-size: .78rem; color: #94a3b8; }
+  .score-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
+  .score-card.highlight .value { color: #1d4ed8; }
+
+  .badge {
+    display: inline-block; padding: .3rem .8rem;
+    border-radius: 999px; font-size: .8rem; font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .badge.high   { background: #dcfce7; color: #166534; }
+  .badge.medium { background: #fef9c3; color: #854d0e; }
+  .badge.low    { background: #fee2e2; color: #991b1b; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: .5rem 2rem; font-size: .85rem; margin-bottom: 1.2rem; }
+  .meta-row span { color: #475569; }
+  .meta-row strong { color: #1e293b; }
+
+  .method-note { font-size: .78rem; color: #94a3b8; margin-bottom: 1.5rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  th { text-align: left; padding: .5rem .75rem; background: #f1f5f9; color: #475569; font-weight: 600; }
+  td { padding: .45rem .75rem; border-bottom: 1px solid #f1f5f9; }
+  tr:last-child td { border-bottom: none; }
+
+  #error { display:none; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:1rem; margin-top:1rem; color:#991b1b; font-size:.9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Certificate Scanner</h1>
+  <p>Indian degree / marksheet — extract and normalize academic scores</p>
+</header>
+
+<div class="container">
+
+  <label class="upload-box" id="drop-zone">
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/tiff" />
+    <div class="icon">📄</div>
+    <h2>Drop certificate image here</h2>
+    <p>JPEG, PNG, WEBP, TIFF — max 10 MB</p>
+    <button onclick="event.preventDefault(); document.getElementById('file-input').click()">Choose File</button>
+  </label>
+
+  <div id="preview-wrap"><img id="preview" src="" alt="preview" /></div>
+  <button id="scan-btn">Scan Certificate</button>
+
+  <div id="loading"><div class="spinner"></div><p style="margin-top:.75rem;color:#64748b;font-size:.9rem">Analyzing with AI…</p></div>
+  <div id="error"></div>
+  <div id="result"></div>
+
+</div>
+
+<script>
+const fileInput = document.getElementById('file-input');
+const dropZone  = document.getElementById('drop-zone');
+const preview   = document.getElementById('preview');
+const previewWrap = document.getElementById('preview-wrap');
+const scanBtn   = document.getElementById('scan-btn');
+const loading   = document.getElementById('loading');
+const resultDiv = document.getElementById('result');
+const errorDiv  = document.getElementById('error');
+
+let selectedFile = null;
+
+fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); setFile(e.dataTransfer.files[0]); });
+
+function setFile(file) {
+  if (!file) return;
+  selectedFile = file;
+  preview.src = URL.createObjectURL(file);
+  previewWrap.style.display = 'block';
+  scanBtn.style.display = 'block';
+  resultDiv.style.display = 'none';
+  errorDiv.style.display = 'none';
+}
+
+scanBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  scanBtn.disabled = true;
+  loading.style.display = 'block';
+  resultDiv.style.display = 'none';
+  errorDiv.style.display = 'none';
+
+  const form = new FormData();
+  form.append('file', selectedFile);
+
+  try {
+    const res = await fetch('/api/scan', { method: 'POST', body: form });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Scan failed');
+    renderResult(data);
+  } catch(err) {
+    errorDiv.textContent = err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    scanBtn.disabled = false;
+    loading.style.display = 'none';
+  }
+});
+
+function val(v, suffix='') { return v != null ? v + suffix : '—'; }
+
+function renderResult(d) {
+  const r = d.raw;
+  const conf = d.confidence || 'low';
+
+  const confLabel = { high: 'High confidence match', medium: 'Approximate match', low: 'Fallback — verify manually' };
+
+  let subjectTable = '';
+  if (r.subject_wise && r.subject_wise.length) {
+    const rows = r.subject_wise.map(s =>
+      `<tr>
+        <td>${s.subject || '—'}</td>
+        <td>${s.marks != null ? s.marks : '—'}</td>
+        <td>${s.total != null ? s.total : '—'}</td>
+        <td>${s.marks != null && s.total ? ((s.marks/s.total)*100).toFixed(1)+'%' : '—'}</td>
+        <td>${s.grade || '—'}</td>
+      </tr>`
+    ).join('');
+    subjectTable = `
+      <h3 style="font-size:.9rem;margin-bottom:.75rem;color:#475569">Subject-wise Scores</h3>
+      <table>
+        <thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>%</th><th>Grade</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  resultDiv.innerHTML = `
+    <div class="meta-row">
+      <span><strong>${r.student_name || 'Unknown'}</strong></span>
+      <span>${r.degree || ''}${r.specialization ? ' — ' + r.specialization : ''}</span>
+      <span>${r.institution || ''}</span>
+      <span>${r.year_of_passing || ''}</span>
+    </div>
+
+    <span class="badge ${conf}">${confLabel[conf]} · ${d.university_matched}</span>
+
+    <div class="score-grid">
+      <div class="score-card highlight">
+        <div class="label">Percentage</div>
+        <div class="value">${d.percentage != null ? d.percentage.toFixed(1) + '%' : '—'}</div>
+        <div class="sub">${d.classification || ''}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">CGPA / GPA</div>
+        <div class="value">${val(r.cgpa || r.gpa)}</div>
+        <div class="sub">scale: ${r.grade_scale || '?'}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Marks</div>
+        <div class="value">${r.marks_scored != null ? r.marks_scored : '—'}</div>
+        <div class="sub">${r.total_marks != null ? 'out of ' + r.total_marks : ''}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Grade</div>
+        <div class="value">${val(r.grade)}</div>
+        <div class="sub">${val(r.result)}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">On 10-pt scale</div>
+        <div class="value">${val(d.on_10_scale)}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">On 4-pt scale</div>
+        <div class="value">${val(d.on_4_scale)}</div>
+      </div>
+    </div>
+
+    <div class="method-note">Normalization: ${d.method || '—'}</div>
+
+    ${subjectTable}
+  `;
+  resultDiv.style.display = 'block';
+}
+</script>
+</body>
+</html>
