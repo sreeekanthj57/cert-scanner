@@ -37,6 +37,7 @@ class RawExtraction(BaseModel):
 
 class NormalizedResult(BaseModel):
     raw: RawExtraction
+    llm_json: Optional[Any] = None
     percentage: Optional[float] = None
     method: Optional[str] = None
     university_matched: Optional[str] = None

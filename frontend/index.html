@@ -89,6 +89,11 @@
 
 
   #error { display:none; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:1rem; margin-top:1rem; color:#991b1b; font-size:.9rem; }
+
+  .json-toggle { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.35rem .9rem; font-size:.8rem; color:#64748b; cursor:pointer; margin-top:1.2rem; }
+  .json-toggle:hover { background:#f8fafc; }
+  #json-view { display:none; margin-top:.75rem; background:#0f172a; border-radius:8px; padding:1rem; overflow-x:auto; }
+  #json-view pre { color:#e2e8f0; font-size:.78rem; font-family:monospace; white-space:pre-wrap; word-break:break-word; }
 </style>
 </head>
 <body>
@@ -159,6 +164,7 @@ scanBtn.addEventListener('click', async () => {
     const res = await fetch('/api/scan', { method: 'POST', body: form });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Scan failed');
+    _lastResult = data;
     renderResult(data);
   } catch(err) {
     errorDiv.textContent = err.message;
@@ -168,6 +174,19 @@ scanBtn.addEventListener('click', async () => {
     loading.style.display = 'none';
   }
 });
+
+let _lastResult = null;
+
+function toggleJson() {
+  const box = document.getElementById('json-view');
+  const pre = document.getElementById('json-pre');
+  if (box.style.display === 'block') {
+    box.style.display = 'none';
+  } else {
+    pre.textContent = JSON.stringify(_lastResult, null, 2);
+    box.style.display = 'block';
+  }
+}
 
 function val(v, suffix='') { return v != null ? v + suffix : '—'; }
 
@@ -221,6 +240,8 @@ function renderResult(d) {
 
     <div class="method-note">Normalization: ${d.method || '—'}</div>
 
+    <button class="json-toggle" onclick="toggleJson()">{ } View raw JSON</button>
+    <div id="json-view"><pre id="json-pre"></pre></div>
   `;
   resultDiv.style.display = 'block';
 }

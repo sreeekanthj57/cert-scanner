@@ -65,4 +65,12 @@ def extract_from_image(image_bytes: bytes) -> RawExtraction:
     raw_text = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_text, flags=re.MULTILINE).strip()
 
     data = json.loads(raw_text)
-    return RawExtraction(**data)
+
+    # Sanitize — LLM sometimes returns years/grades as numbers
+    STR_FIELDS = ["year_of_passing", "institution", "student_name", "degree",
+                  "specialization", "grade", "grade_scale", "result", "cgpa_formula_on_cert"]
+    for f in STR_FIELDS:
+        if f in data and data[f] is not None and not isinstance(data[f], str):
+            data[f] = str(data[f])
+
+    return RawExtraction(**data), data

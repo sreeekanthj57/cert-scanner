@@ -46,11 +46,12 @@ async def scan_certificate(file: UploadFile = File(...)):
 
     try:
         # Send original image — vision LLMs read color better than B&W threshold
-        extraction = extract_from_image(raw_bytes)
+        extraction, llm_json = extract_from_image(raw_bytes)
     except Exception as e:
         raise HTTPException(502, f"AI extraction failed: {e}")
 
     result = normalize(extraction)
+    result.llm_json = llm_json
     return result
 
 
