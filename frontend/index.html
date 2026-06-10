@@ -8,132 +8,184 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, sans-serif; background: #f5f7fa; color: #1a1a2e; min-height: 100vh; }
 
-  header { background: #1a1a2e; color: white; padding: 1rem 2rem; }
+  header { background: #1a1a2e; color: white; padding: 1rem 2rem; display:flex; align-items:center; justify-content:space-between; }
   header h1 { font-size: 1.25rem; font-weight: 600; }
   header p  { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+  header a  { color:#93c5fd; font-size:.8rem; text-decoration:none; border:1px solid #334155; border-radius:6px; padding:.3rem .8rem; }
+  header a:hover { background:#1e3a5f; }
 
   .container { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
 
+  /* Tabs */
+  .tabs { display:flex; gap:.5rem; margin-bottom:1rem; }
+  .tab { padding:.5rem 1.2rem; border-radius:8px 8px 0 0; border:1px solid #e2e8f0; border-bottom:none;
+         background:#f8fafc; font-size:.9rem; cursor:pointer; color:#64748b; }
+  .tab.active { background:white; color:#1a1a2e; font-weight:600; }
+
+  .panel { background:white; border-radius:0 12px 12px 12px; border:1px solid #e2e8f0; padding:2rem; }
+
+  /* File upload */
   .upload-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 2px dashed #c0c8d8;
-    border-radius: 12px;
-    padding: 3rem 2rem;
-    text-align: center;
-    background: white;
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border:2px dashed #c0c8d8; border-radius:12px; padding:2.5rem 2rem;
+    text-align:center; cursor:pointer; transition:border-color .2s, background .2s;
   }
-  .upload-box:hover, .upload-box.drag { border-color: #4f6ef7; background: #f0f4ff; }
-  .upload-box .icon { font-size: 3rem; line-height: 1; }
-  .upload-box h2 { margin: .75rem 0 .4rem; font-size: 1.1rem; }
-  .upload-box p  { font-size: .85rem; color: #666; }
-  .upload-box button {
-    margin-top: 1.2rem;
-    background: #4f6ef7; color: white;
-    border: none; border-radius: 8px;
-    padding: .6rem 1.6rem; font-size: .9rem;
-    cursor: pointer;
+  .upload-box:hover, .upload-box.drag { border-color:#4f6ef7; background:#f0f4ff; }
+  .upload-box .icon { font-size:2.5rem; line-height:1; }
+  .upload-box h2 { margin:.6rem 0 .3rem; font-size:1rem; }
+  .upload-box p  { font-size:.82rem; color:#666; }
+  .choose-btn {
+    margin-top:1rem; background:#4f6ef7; color:white;
+    border:none; border-radius:8px; padding:.55rem 1.4rem;
+    font-size:.88rem; cursor:pointer;
   }
 
-  #preview-wrap { display: none; text-align: center; margin-top: 1rem; }
-  #preview-wrap img { max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px #0002; }
+  /* URL input */
+  .url-row { display:flex; gap:.75rem; margin-top:.5rem; }
+  .url-row input {
+    flex:1; border:1px solid #e2e8f0; border-radius:8px;
+    padding:.65rem 1rem; font-size:.9rem; outline:none;
+  }
+  .url-row input:focus { border-color:#4f6ef7; }
+  .url-row button {
+    background:#4f6ef7; color:white; border:none; border-radius:8px;
+    padding:.65rem 1.4rem; font-size:.9rem; cursor:pointer; white-space:nowrap;
+  }
+  .url-hint { font-size:.78rem; color:#94a3b8; margin-top:.5rem; }
+
+  #preview-wrap { display:none; text-align:center; margin-top:1rem; }
+  #preview-wrap img { max-height:180px; border-radius:8px; box-shadow:0 2px 8px #0002; }
 
   #scan-btn {
-    display: none; width: 100%; margin-top: 1rem;
-    background: #22c55e; color: white;
-    border: none; border-radius: 8px;
-    padding: .75rem; font-size: 1rem; font-weight: 600;
-    cursor: pointer;
+    display:none; width:100%; margin-top:1rem;
+    background:#22c55e; color:white; border:none; border-radius:8px;
+    padding:.75rem; font-size:1rem; font-weight:600; cursor:pointer;
   }
-  #scan-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+  #scan-btn:disabled { background:#9ca3af; cursor:not-allowed; }
 
-  #loading { display: none; text-align: center; margin: 2rem 0; }
+  #loading { display:none; text-align:center; margin:2rem 0; }
   .spinner {
-    width: 40px; height: 40px; border: 4px solid #e5e7eb;
-    border-top-color: #4f6ef7; border-radius: 50%;
-    animation: spin .8s linear infinite; display: inline-block;
+    width:38px; height:38px; border:4px solid #e5e7eb;
+    border-top-color:#4f6ef7; border-radius:50%;
+    animation:spin .8s linear infinite; display:inline-block;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
 
-  #result { display: none; background: white; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+  #result { display:none; background:white; border-radius:12px; padding:1.5rem; margin-top:1.5rem; }
 
-  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .score-card {
-    border-radius: 10px; padding: 1rem 1.2rem;
-    background: #f8fafc; border: 1px solid #e2e8f0;
-  }
-  .score-card .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; }
-  .score-card .value { font-size: 1.6rem; font-weight: 700; margin: .2rem 0; }
-  .score-card .sub   { font-size: .78rem; color: #94a3b8; }
-  .score-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
-  .score-card.highlight .value { color: #1d4ed8; }
+  .score-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:1rem; margin-bottom:1.5rem; }
+  .score-card { border-radius:10px; padding:1rem 1.2rem; background:#f8fafc; border:1px solid #e2e8f0; }
+  .score-card .label { font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:#64748b; }
+  .score-card .value { font-size:1.55rem; font-weight:700; margin:.2rem 0; }
+  .score-card .sub   { font-size:.76rem; color:#94a3b8; }
+  .score-card.highlight { background:#eff6ff; border-color:#bfdbfe; }
+  .score-card.highlight .value { color:#1d4ed8; }
 
   .quality-ok     { display:flex; align-items:center; gap:.5rem; background:#dcfce7; color:#166534; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
   .quality-approx { display:flex; align-items:center; gap:.5rem; background:#fef9c3; color:#854d0e; border:1px solid #fde68a; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
   .quality-warn   { display:flex; align-items:center; gap:.5rem; background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; font-weight:600; margin-bottom:1rem; }
 
-  .meta-row { display: flex; flex-wrap: wrap; gap: .5rem 2rem; font-size: .85rem; margin-bottom: 1.2rem; }
-  .meta-row span { color: #475569; }
-  .meta-row strong { color: #1e293b; }
+  .meta-row { display:flex; flex-wrap:wrap; gap:.4rem 2rem; font-size:.85rem; margin-bottom:1.2rem; }
+  .meta-row span { color:#475569; }
+  .meta-row strong { color:#1e293b; }
 
-  .method-note { font-size: .78rem; color: #94a3b8; margin-bottom: 1.5rem; }
+  .method-note { font-size:.76rem; color:#94a3b8; margin-bottom:1.2rem; }
 
+  #error { display:none; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:1rem; margin-top:1rem; color:#991b1b; font-size:.88rem; }
 
-  #error { display:none; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:1rem; margin-top:1rem; color:#991b1b; font-size:.9rem; }
-
-  .json-toggle { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.35rem .9rem; font-size:.8rem; color:#64748b; cursor:pointer; margin-top:1.2rem; }
+  .json-toggle { background:none; border:1px solid #e2e8f0; border-radius:6px; padding:.3rem .85rem; font-size:.78rem; color:#64748b; cursor:pointer; }
   .json-toggle:hover { background:#f8fafc; }
   #json-view { display:none; margin-top:.75rem; background:#0f172a; border-radius:8px; padding:1rem; overflow-x:auto; }
-  #json-view pre { color:#e2e8f0; font-size:.78rem; font-family:monospace; white-space:pre-wrap; word-break:break-word; }
+  #json-view pre { color:#e2e8f0; font-size:.76rem; font-family:monospace; white-space:pre-wrap; word-break:break-word; }
+
+  .api-link { display:inline-flex; align-items:center; gap:.4rem; margin-top:.5rem; font-size:.8rem; color:#4f6ef7; text-decoration:none; }
+  .api-link:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Certificate Scanner</h1>
-  <p>Indian degree / marksheet — extract and normalize academic scores</p>
+  <div>
+    <h1>Certificate Scanner</h1>
+    <p>Indian degree / marksheet — extract and normalize academic scores</p>
+  </div>
+  <a href="/docs" target="_blank">API Docs ↗</a>
 </header>
 
 <div class="container">
 
-  <div class="upload-box" id="drop-zone">
-    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/tiff" style="display:none" />
-    <div class="icon">📄</div>
-    <h2>Drop certificate image here</h2>
-    <p>JPEG, PNG, WEBP, TIFF — max 10 MB</p>
-    <button onclick="document.getElementById('file-input').click()">Choose File</button>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('file', this)">Upload File</div>
+    <div class="tab" onclick="switchTab('url', this)">Image URL</div>
   </div>
 
-  <div id="preview-wrap"><img id="preview" src="" alt="preview" /></div>
-  <button id="scan-btn">Scan Certificate</button>
+  <!-- File upload panel -->
+  <div class="panel" id="panel-file">
+    <div class="upload-box" id="drop-zone">
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/tiff" style="display:none" />
+      <div class="icon">📄</div>
+      <h2>Drop certificate image here</h2>
+      <p>JPEG, PNG, WEBP, TIFF — max 10 MB</p>
+      <button class="choose-btn" onclick="document.getElementById('file-input').click()">Choose File</button>
+    </div>
+    <div id="preview-wrap"><img id="preview" src="" alt="preview" /></div>
+    <button id="scan-btn">Scan Certificate</button>
+  </div>
 
-  <div id="loading"><div class="spinner"></div><p style="margin-top:.75rem;color:#64748b;font-size:.9rem">Analyzing with AI…</p></div>
+  <!-- URL panel -->
+  <div class="panel" id="panel-url" style="display:none">
+    <p style="font-size:.88rem;color:#475569;margin-bottom:.75rem">Paste a public URL to a certificate image:</p>
+    <div class="url-row">
+      <input type="url" id="url-input" placeholder="https://example.com/marksheet.jpg" />
+      <button onclick="scanUrl()">Scan</button>
+    </div>
+    <p class="url-hint">Supports JPEG, PNG, WEBP, TIFF — max 10 MB. URL must be publicly accessible.</p>
+  </div>
+
+  <div id="loading"><div class="spinner"></div><p style="margin-top:.75rem;color:#64748b;font-size:.88rem">Analyzing with AI…</p></div>
   <div id="error"></div>
   <div id="result"></div>
+
+  <a class="api-link" href="/docs" target="_blank">
+    &#128196; View full API documentation &amp; try endpoints
+  </a>
 
 </div>
 
 <script>
-const fileInput = document.getElementById('file-input');
-const dropZone  = document.getElementById('drop-zone');
-const preview   = document.getElementById('preview');
+const fileInput   = document.getElementById('file-input');
+const dropZone    = document.getElementById('drop-zone');
+const preview     = document.getElementById('preview');
 const previewWrap = document.getElementById('preview-wrap');
-const scanBtn   = document.getElementById('scan-btn');
-const loading   = document.getElementById('loading');
-const resultDiv = document.getElementById('result');
-const errorDiv  = document.getElementById('error');
+const scanBtn     = document.getElementById('scan-btn');
+const loading     = document.getElementById('loading');
+const resultDiv   = document.getElementById('result');
+const errorDiv    = document.getElementById('error');
 
 let selectedFile = null;
+let _lastResult  = null;
 
+// --- Tab switching ---
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-file').style.display = name === 'file' ? '' : 'none';
+  document.getElementById('panel-url').style.display  = name === 'url'  ? '' : 'none';
+  clearResult();
+}
+
+function clearResult() {
+  resultDiv.style.display = 'none';
+  errorDiv.style.display  = 'none';
+}
+
+// --- File upload ---
 fileInput.addEventListener('change', e => setFile(e.target.files[0]));
-
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); setFile(e.dataTransfer.files[0]); });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag'); setFile(e.dataTransfer.files[0]);
+});
 
 function setFile(file) {
   if (!file) return;
@@ -141,22 +193,38 @@ function setFile(file) {
   preview.src = URL.createObjectURL(file);
   previewWrap.style.display = 'block';
   scanBtn.style.display = 'block';
-  resultDiv.style.display = 'none';
-  errorDiv.style.display = 'none';
+  clearResult();
 }
 
 scanBtn.addEventListener('click', async () => {
   if (!selectedFile) return;
-  scanBtn.disabled = true;
-  loading.style.display = 'block';
-  resultDiv.style.display = 'none';
-  errorDiv.style.display = 'none';
-
   const form = new FormData();
   form.append('file', selectedFile);
+  await doScan(() => fetch('/api/scan', { method: 'POST', body: form }));
+});
 
+// --- URL scan ---
+async function scanUrl() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  await doScan(() => fetch('/api/scan-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  }));
+}
+
+document.getElementById('url-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') scanUrl();
+});
+
+// --- Shared scan handler ---
+async function doScan(fetchFn) {
+  scanBtn.disabled = true;
+  loading.style.display = 'block';
+  clearResult();
   try {
-    const res = await fetch('/api/scan', { method: 'POST', body: form });
+    const res  = await fetchFn();
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Scan failed');
     _lastResult = data;
@@ -168,33 +236,30 @@ scanBtn.addEventListener('click', async () => {
     scanBtn.disabled = false;
     loading.style.display = 'none';
   }
-});
+}
 
-let _lastResult = null;
-
+// --- JSON toggle ---
 function toggleJson() {
   const box = document.getElementById('json-view');
   const pre = document.getElementById('json-pre');
-  if (box.style.display === 'block') {
-    box.style.display = 'none';
-  } else {
-    pre.textContent = JSON.stringify(_lastResult, null, 2);
-    box.style.display = 'block';
-  }
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  if (box.style.display === 'block') pre.textContent = JSON.stringify(_lastResult, null, 2);
 }
 
 function val(v, suffix='') { return v != null ? v + suffix : '—'; }
 
+// --- Render result ---
 function renderResult(d) {
   const r = d.raw;
 
-  const hasExact   = r.marks_scored != null || r.cgpa != null || r.gpa != null
-                     || (d.percentage != null && !d.is_provisional);
-  const hasApprox  = d.is_provisional && d.percentage != null;
+  const hasExact  = r.marks_scored != null || r.cgpa != null || r.gpa != null
+                    || (d.percentage != null && !d.is_provisional);
+  const hasApprox = d.is_provisional && d.percentage != null;
+
   const qualityBadge = hasExact
     ? `<div class="quality-ok">&#10003; Data extracted successfully</div>`
     : hasApprox
-      ? `<div class="quality-approx">&#9432; Approximate values — based on result class only (provisional/degree cert)</div>`
+      ? `<div class="quality-approx">&#9432; Approximate — based on result class only (provisional / degree cert)</div>`
       : `<div class="quality-warn">&#9888; Could not extract scores — poor scan quality or unsupported format. Please verify manually.</div>`;
 
   resultDiv.innerHTML = `
@@ -210,12 +275,12 @@ function renderResult(d) {
     <div class="score-grid">
       <div class="score-card highlight">
         <div class="label">Percentage${d.is_provisional ? ' (approx)' : ''}</div>
-        <div class="value">${d.percentage_range ? d.percentage_range : (d.percentage != null ? d.percentage.toFixed(1) + '%' : '—')}</div>
+        <div class="value">${d.percentage_range || (d.percentage != null ? d.percentage.toFixed(1)+'%' : '—')}</div>
         <div class="sub">${d.classification || ''}</div>
       </div>
       <div class="score-card">
         <div class="label">CGPA / GPA</div>
-        <div class="value">${val(r.cgpa || r.gpa)}</div>
+        <div class="value">${val(r.cgpa ?? r.gpa)}</div>
         <div class="sub">scale: ${r.grade_scale || '?'}</div>
       </div>
       <div class="score-card">
@@ -239,7 +304,6 @@ function renderResult(d) {
     </div>
 
     <div class="method-note">Normalization: ${d.method || '—'}</div>
-
     <button class="json-toggle" onclick="toggleJson()">{ } View raw JSON</button>
     <div id="json-view"><pre id="json-pre"></pre></div>
   `;
