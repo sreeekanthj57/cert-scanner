@@ -252,15 +252,11 @@ function val(v, suffix='') { return v != null ? v + suffix : '—'; }
 function renderResult(d) {
   const r = d.raw;
 
-  const hasExact  = r.marks_scored != null || r.cgpa != null || r.gpa != null
-                    || (d.percentage != null && !d.is_provisional);
-  const hasApprox = d.is_provisional && d.percentage != null;
+  const hasScore = d.percentage != null || r.cgpa != null || r.gpa != null || r.marks_scored != null;
 
-  const qualityBadge = hasExact
+  const qualityBadge = hasScore
     ? `<div class="quality-ok">&#10003; Data extracted successfully</div>`
-    : hasApprox
-      ? `<div class="quality-approx">&#9432; Approximate — based on result class only (provisional / degree cert)</div>`
-      : `<div class="quality-warn">&#9888; Could not extract scores — poor scan quality or unsupported format. Please verify manually.</div>`;
+    : `<div class="quality-warn">&#9888; Could not extract scores — poor scan quality or unsupported format. Please verify manually.</div>`;
 
   resultDiv.innerHTML = `
     <div class="meta-row">
@@ -274,8 +270,8 @@ function renderResult(d) {
 
     <div class="score-grid">
       <div class="score-card highlight">
-        <div class="label">Percentage${d.is_provisional ? ' (approx)' : ''}</div>
-        <div class="value">${d.percentage_range || (d.percentage != null ? d.percentage.toFixed(1)+'%' : '—')}</div>
+        <div class="label">Percentage</div>
+        <div class="value">${d.percentage != null ? d.percentage.toFixed(1)+'%' : '—'}</div>
         <div class="sub">${d.classification || ''}</div>
       </div>
       <div class="score-card">

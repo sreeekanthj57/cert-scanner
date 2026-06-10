@@ -38,9 +38,7 @@ class RawExtraction(BaseModel):
 class NormalizedResult(BaseModel):
     raw: RawExtraction
     llm_json: Optional[Any] = None
-    is_provisional: bool = False
     percentage: Optional[float] = None
-    percentage_range: Optional[str] = None   # e.g. "60–74%" when exact not available
     method: Optional[str] = None
     university_matched: Optional[str] = None
     confidence: str = "low"
