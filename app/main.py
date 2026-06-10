@@ -40,12 +40,13 @@ async def scan_certificate(file: UploadFile = File(...)):
         raise HTTPException(400, f"File too large. Max {MAX_SIZE_MB}MB.")
 
     try:
-        processed = preprocess_certificate(raw_bytes)
+        preprocess_certificate(raw_bytes)  # validate image is readable
     except Exception as e:
         raise HTTPException(422, f"Image preprocessing failed: {e}")
 
     try:
-        extraction = extract_from_image(processed)
+        # Send original image — vision LLMs read color better than B&W threshold
+        extraction = extract_from_image(raw_bytes)
     except Exception as e:
         raise HTTPException(502, f"AI extraction failed: {e}")
 

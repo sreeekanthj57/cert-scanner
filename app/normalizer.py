@@ -22,9 +22,9 @@ def _resolve_university(name: str, rules: dict) -> tuple[str, str]:
             if alias.lower() in name_lower:
                 return key, "high"
 
-    # Fuzzy match
+    # Fuzzy match — high cutoff to avoid false positives
     alias_map = {a.lower(): k for k, r in rules.items() for a in r.get("aliases", [])}
-    matches = get_close_matches(name_lower, alias_map.keys(), n=1, cutoff=0.55)
+    matches = get_close_matches(name_lower, alias_map.keys(), n=1, cutoff=0.80)
     if matches:
         return alias_map[matches[0]], "medium"
 
